@@ -11,11 +11,14 @@ Imports Org.BouncyCastle.OpenSsl
 Imports Org.BouncyCastle.Crypto
 Imports Org.BouncyCastle.Security
 Imports System.Text
+Imports Newtonsoft.Json
 
 Module MODULOGENERAL
     Public RESPUESTA As String
 
-    Public Sub EnviarMsgWA(ByVal templateId As String, ByVal toPhoneNumber As String, ByVal additionalParams As Dictionary(Of String, String))
+    Public Function EnviarMsgWA(ByVal templateId As String, ByVal toPhoneNumber As String, ByVal additionalParams As Dictionary(Of String, String)) As WAMessageResponse
+        Dim response As New WAMessageResponse
+
         Dim baseUrl As String = My.Settings.UrlBaseWSWA
         Dim queryParams As New List(Of String)
         queryParams.Add($"templateId={Uri.EscapeDataString(templateId)}")
@@ -27,10 +30,11 @@ Module MODULOGENERAL
 
         Dim queryString As String = String.Join("&", queryParams)
         Dim fullUrl As String = $"{baseUrl}?{queryString}"
-
+        Dim responseData As String
         Using client As New WebClient()
             Try
-                Dim responseData As String = client.DownloadString(fullUrl)
+                responseData = client.DownloadString(fullUrl)
+                response = JsonConvert.DeserializeObject(Of WAMessageResponse)(responseData)
             Catch ex As WebException
                 If ex.Response IsNot Nothing Then
                     Using responseStream = ex.Response.GetResponseStream()
@@ -41,8 +45,8 @@ Module MODULOGENERAL
                 End If
             End Try
         End Using
-
-    End Sub
+        Return response
+    End Function
     Public Sub CARGAX(ByRef LISTA As List(Of String), ByRef CB As ComboBox, ByVal VALOR As String)
         Dim X As Integer
         For X = 0 To LISTA.Count - 1
@@ -311,7 +315,7 @@ Module MODULOGENERAL
         Return Format(Now, "DD/MM/YYYY hh:mm:ss tt")
     End Function
     Public Function InfoFechaEquipo(ByVal Formato As String) As String
-        Return Format(Now, formato)
+        Return Format(Now, Formato)
     End Function
     Public Function LLENATABLA(ByVal QUERY As String, ByVal CADENA As String) As DataTable
         Dim CONX As New SqlClient.SqlConnection(CADENA)

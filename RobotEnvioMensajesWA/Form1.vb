@@ -1,4 +1,7 @@
-﻿Public Class frmPrincipal
+﻿Imports Newtonsoft
+Imports Newtonsoft.Json
+
+Public Class frmPrincipal
     Dim CONT As Integer
     Dim ContResp As Integer
     Public IP, Sistema, Version As String
@@ -32,7 +35,7 @@
         LBLEJE.Text = "Ejecutando desde: " + FL.DirectoryName + " " + IP
         CONX.Open()
         CHECACONX()
-        CONT = 10
+        CONT = 6
 
 
         If EsAdministrador() Then
@@ -43,12 +46,38 @@
         End If
         Timer1.Start()
     End Sub
-
+    Dim TEMPLATEID, PHONENUMBER, JSONPARAMS, MENSAJEID As String
     Private Sub EnviarMensajes()
+        If Not CHECACONX() Then
+            Exit Sub
+        End If
+        Dim DT As New DataTable
+
+        DT = LLENATABLA("SELECT TOP 50  TEMPLATEID,PHONENUMBER,JSONPARAMS,ID  FROM MENSAJES  with (nolock) WHERE SENDED=0", CadenaConexion)
+        Dim X As Integer
+        For X = 0 To DT.Rows.Count - 1
+            TEMPLATEID = DT.Rows(X).Item(0).ToString
+            PHONENUMBER = DT.Rows(X).Item(1).ToString
+            JSONPARAMS = DT.Rows(X).Item(2).ToString
+            MENSAJEID = DT.Rows(X).Item(3).ToString
+
+            WriteLog("Enviando mensaje to " + PHONENUMBER + Format(Now, "hh:mm:ss tt"))
+            ACTUALIZALOG()
+            Dim PARAMS As Dictionary(Of String, String) = JsonConvert.DeserializeObject(Of Dictionary(Of String, String))(JSONPARAMS)
+            Dim resp As New WAMessageResponse
+            resp = EnviarMsgWA(TEMPLATEID, PHONENUMBER, PARAMS)
+            If resp.Sid <> "" Then
+                WriteLog("Enviando con éxito " + PHONENUMBER + Format(Now, "hh:mm:ss tt"))
+                ACTUALIZALOG()
+                BDEjecutarSql("update Mensajes SET Sended=1,SendId='" + resp.Sid + "',DateSent=GETDATE(),Status='" + resp.Status + "',ErrorCode='" + resp.ErrorCode.ToString + "',ErrorMessage='" + resp.ErrorMessage + "' WHERE Id='" + MENSAJEID + "'", CadenaConexion)
+            End If
+        Next
 
     End Sub
     Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
         SB.Items(1).Text = "Envio de Mensajes WA   " + Format(Now, "hh:mm:ss tt")
+        CONT = CONT - 1
+
         If CONT <= 0 Then
 
             Timer1.Stop()
@@ -65,7 +94,7 @@
                         ACTUALIZALOG()
                         EnviarMensajes()
                     Else
-                        WriteLog("No hay facturas para Timbrar " + Format(Now, "hh:mm:ss tt"))
+                        WriteLog("No hay mensajes para enviar " + Format(Now, "hh:mm:ss tt"))
                         ACTUALIZALOG()
 
                     End If
