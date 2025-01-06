@@ -19,10 +19,16 @@ Public Class frmPrincipal
         LBD.Add("MensajeoWa")
         'CBBD.Items.Clear()
         ''IP = " 127.0.0.1"
-        IP = "navyserver.ddns.net"
+        IP = "structureserver3.ddns.net"
         BD = "MensajeoWa"
-        USER = "dbaadmin"
-        PWDBD = "Xoporte1234."
+        USER = "MarosIlocal"
+        PWDBD = "Loco*1234"
+
+
+        'IP = "navyserver.ddns.net"
+        'BD = "MensajeoWa"
+        'USER = "dbaadmin"
+        'PWDBD = "Xoporte1234."
 
 
         CadenaConexion = "Data Source=" + IP + ",1433;Network Library=DBMSSOCN;Initial Catalog=" + BD + ";User ID=" + USER + ";Password=" + PWDBD + ""

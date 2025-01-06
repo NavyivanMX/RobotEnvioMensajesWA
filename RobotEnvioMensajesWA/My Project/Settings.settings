@@ -5,5 +5,8 @@
     <Setting Name="UrlBaseWSWA" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://navyserver.ddns.net:84/api/WhatsApp/SendWaMessage</Value>
     </Setting>
+    <Setting Name="UrlBaseWSWAPruebas" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://localhost:5018/api/WhatsApp/SendWaMessage</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
