@@ -1,16 +1,9 @@
 ﻿Imports System.IO
 Imports System.Net.Mail
-Imports System.Data.OleDb
 Imports System.Net
-Imports System.Windows
-Imports System.Net.Mime
 Imports System.Drawing.Printing
 Imports System.Threading
 Imports System.Security.Principal
-Imports Org.BouncyCastle.OpenSsl
-Imports Org.BouncyCastle.Crypto
-Imports Org.BouncyCastle.Security
-Imports System.Text
 Imports Newtonsoft.Json
 
 Module MODULOGENERAL
@@ -40,6 +33,7 @@ Module MODULOGENERAL
                     Using responseStream = ex.Response.GetResponseStream()
                         Using reader As New System.IO.StreamReader(responseStream)
                             Dim errorResponse = reader.ReadToEnd()
+                            response.ErrorMessage = errorResponse.ToString
                         End Using
                     End Using
                 End If
