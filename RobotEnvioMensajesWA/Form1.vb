@@ -73,7 +73,7 @@ Public Class frmPrincipal
             Dim resp As New WAMessageResponse
             resp = EnviarMsgWA(TEMPLATEID, PHONENUMBER, PARAMS)
             If resp.Sid <> "" Then
-                WriteLog("Enviando con éxito " + PHONENUMBER + Format(Now, "hh:mm:ss tt"))
+                WriteLog("Enviando con éxito " + PHONENUMBER + " " + Format(Now, "hh:mm:ss tt"))
                 ACTUALIZALOG()
                 BDEjecutarSql("update Mensajes SET Sended=1,SendId='" + resp.Sid + "',DateSent=GETDATE(),Status='" + resp.Status + "',ErrorCode='" + resp.ErrorCode.ToString + "',ErrorMessage='" + resp.ErrorMessage + "' WHERE Id='" + MENSAJEID + "'", CadenaConexion)
             End If
